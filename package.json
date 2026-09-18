@@ -1,0 +1,36 @@
+{
+  "name": "sanguosha-tianyuan",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "天元争锋 - 原创三国题材多人卡牌对战",
+  "scripts": {
+    "build:shared": "tsc -p shared/tsconfig.json",
+    "build:client": "vite build --config client/vite.config.ts",
+    "build:server": "tsc -p server/tsconfig.json",
+    "build": "npm run build:client && npm run build:server",
+    "dev": "concurrently -n server,client -c gold,cyan \"tsx watch server/src/index.ts\" \"vite --config client/vite.config.ts\"",
+    "start": "node server/dist/server/src/index.js",
+    "smoke": "tsx scripts/smoke-test.ts"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.13",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2",
+    "vite": "^6.0.7",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "concurrently": "^9.1.2"
+  }
+}

@@ -2,6 +2,17 @@
 
 原创三国题材多人身份卡牌对战（浏览器 + WebSocket）。**与任何商业「三国杀」产品无关**，武将、技能、卡牌均为原创命名。
 
+
+## 演示截图
+
+| 大厅 | 房间 |
+|:---:|:---:|
+| ![大厅](docs/screenshots/01-lobby.png) | ![房间](docs/screenshots/02-room.png) |
+
+| 选将 | 对局 |
+|:---:|:---:|
+| ![选将](docs/screenshots/03-pick.png) | ![对局](docs/screenshots/03-game.png) |
+
 ## 功能
 
 - 创建 / 加入房间（6 位房间码）+ 昵称

@@ -1,10 +1,10 @@
 import type { GeneralDef } from './types.js';
 
 /**
- * 40+ 原创武将（天元争锋）
- * hooks 供服务端识别：extraDraw, recoverOnKill, slashNoLimit, dodgeAsSlash,
- * drawOnDamage, discardOnHit, healAlly, doubleSlashRange, lowHpDraw,
- * peachExtra, skipDrawGain, revengeKill, equipDraw, handLimit+1, etc.
+ * 56 原创武将（天元争锋）
+ * hooks 供服务端识别：extraDraw, slashNoLimit, drawOnDamage, handLimitPlus1,
+ * peachExtra, damageCap1, burstSelfHit2, drawOnSlashHit, forceDiscardAndSkip,
+ * onceForceDiscard, healAllyDraw, wanshaLock, redAsSlash, etc.
  */
 export const GENERALS: GeneralDef[] = [
   {
@@ -246,6 +246,58 @@ export const GENERALS: GeneralDef[] = [
     id: 'g48', name: '董仲颖', faction: '散侠', maxHp: 8, gender: 'male',
     skills: [{ id: 's_jiuchi', name: '酒池', description: '你可将一张黑桃手牌当「斩」使用（本回合限一次伤害+0简化）。', kind: 'active' }],
     hooks: ['spadeAsSlash'],
+  },
+  {
+    id: 'g49', name: '赤燎原', faction: '苍原', maxHp: 4, gender: 'male',
+    skills: [{ id: 's_liefan', name: '烈焚', description: '出牌阶段限一次，失去1点体力对攻击范围内一名角色造成2点伤害。', kind: 'active' }],
+    hooks: ['burstSelfHit2'],
+  },
+  {
+    id: 'g50', name: '雷贯空', faction: '星汉', maxHp: 4, gender: 'male',
+    skills: [
+      { id: 's_tingnu', name: '霆怒', description: '出牌阶段你使用「斩」无次数限制。', kind: 'passive' },
+      { id: 's_dianmo', name: '电陌', description: '你造成「斩」伤害后摸一张牌。', kind: 'trigger' },
+    ],
+    hooks: ['slashNoLimit', 'drawOnSlashHit'],
+  },
+  {
+    id: 'g51', name: '磐石卫', faction: '龙庭', maxHp: 4, gender: 'male',
+    skills: [
+      { id: 's_gulei', name: '固垒', description: '你的手牌上限+1。', kind: 'passive' },
+      { id: 's_houyuan', name: '厚垣', description: '你受到伤害后摸一张牌。', kind: 'trigger' },
+    ],
+    hooks: ['handLimitPlus1', 'drawOnDamage'],
+  },
+  {
+    id: 'g52', name: '霜敛衣', faction: '江左', maxHp: 3, gender: 'female',
+    skills: [{ id: 's_ningshuang', name: '凝霜', description: '你每次受到的伤害至多为1点。', kind: 'passive' }],
+    hooks: ['damageCap1'],
+  },
+  {
+    id: 'g53', name: '雾锁津', faction: '江左', maxHp: 3, gender: 'female',
+    skills: [{ id: 's_mizhang', name: '迷障', description: '出牌阶段限一次，令一名其他角色弃一张手牌并跳过其下一回合的出牌阶段。', kind: 'active' }],
+    hooks: ['forceDiscardAndSkip'],
+  },
+  {
+    id: 'g54', name: '锁魄客', faction: '幽冥', maxHp: 3, gender: 'male',
+    skills: [
+      { id: 's_juexi', name: '绝息', description: '你的回合内，只有你和濒死角色可使用「疗」。', kind: 'passive' },
+      { id: 's_chezhou', name: '掣肘', description: '出牌阶段限一次，令一名有手牌的角色弃一张手牌。', kind: 'active' },
+    ],
+    hooks: ['wanshaLock', 'onceForceDiscard'],
+  },
+  {
+    id: 'g55', name: '兰心荷', faction: '散侠', maxHp: 3, gender: 'female',
+    skills: [{ id: 's_jishi', name: '济世', description: '出牌阶段限一次，令一名角色回复1点体力并摸一张牌。', kind: 'active' }],
+    hooks: ['healAllyDraw'],
+  },
+  {
+    id: 'g56', name: '衡机子', faction: '星汉', maxHp: 3, gender: 'male',
+    skills: [
+      { id: 's_yingmou', name: '盈谋', description: '摸牌阶段你多摸一张牌。', kind: 'passive' },
+      { id: 's_quanheng', name: '权衡', description: '你可将一张红色牌当「斩」使用。', kind: 'active' },
+    ],
+    hooks: ['extraDraw', 'redAsSlash'],
   },
 ];
 

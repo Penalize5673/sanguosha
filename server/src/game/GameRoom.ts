@@ -635,7 +635,7 @@ export class GameRoom {
       this.broadcastState();
       return;
     }
-    if (this.hasHook(p, 'redAsSlash') && skillId === 's_wusheng') {
+    if (this.hasHook(p, 'redAsSlash') && (skillId === 's_wusheng' || skillId === 's_quanheng')) {
       if (cardIds.length !== 1) throw new Error('选择一张红色牌');
       const card = p.hand.find((c) => c.id === cardIds[0]);
       if (!card) throw new Error('手牌不存在');
@@ -711,11 +711,62 @@ export class GameRoom {
       this.broadcastState();
       return;
     }
+    if (this.hasHook(p, 'burstSelfHit2') && skillId === 's_liefan') {
+      if (targetIds.length !== 1) throw new Error('需要目标');
+      const t = this.mustAlive(targetIds[0]);
+      if (t.id === p.id) throw new Error('不能以自己为目标');
+      if (!this.inAttackRange(p, t)) throw new Error('目标不在攻击范围内');
+      p.skillUsedThisTurn.add(skillId);
+      p.hp -= 1;
+      this.addLog(`${p.nickname}【烈焚】失去1点体力`);
+      this.checkDying(p, p);
+      if (p.isAlive) this.dealDamage(t, p, 2, 'skill');
+      this.broadcastState();
+      return;
+    }
+    if (this.hasHook(p, 'forceDiscardAndSkip') && skillId === 's_mizhang') {
+      if (targetIds.length !== 1) throw new Error('需要目标');
+      const t = this.mustAlive(targetIds[0]);
+      if (t.id === p.id) throw new Error('不能以自己为目标');
+      if (!t.hand.length) throw new Error('目标无手牌');
+      const c = t.hand.splice(Math.floor(Math.random() * t.hand.length), 1)[0];
+      this.discard.push(c);
+      t.skipNextPlay = true;
+      p.skillUsedThisTurn.add(skillId);
+      this.addLog(`${p.nickname}【迷障】令 ${t.nickname} 弃牌并跳过下一出牌阶段`);
+      this.broadcastState();
+      return;
+    }
+    if (this.hasHook(p, 'onceForceDiscard') && skillId === 's_chezhou') {
+      if (targetIds.length !== 1) throw new Error('需要目标');
+      const t = this.mustAlive(targetIds[0]);
+      if (!t.hand.length) throw new Error('目标无手牌');
+      const c = t.hand.splice(Math.floor(Math.random() * t.hand.length), 1)[0];
+      this.discard.push(c);
+      p.skillUsedThisTurn.add(skillId);
+      this.addLog(`${p.nickname}【掣肘】弃置 ${t.nickname} 一张手牌`);
+      this.broadcastState();
+      return;
+    }
+    if (this.hasHook(p, 'healAllyDraw') && skillId === 's_jishi') {
+      if (targetIds.length !== 1) throw new Error('需要目标');
+      const t = this.mustAlive(targetIds[0]);
+      p.skillUsedThisTurn.add(skillId);
+      if (t.hp < t.maxHp) t.hp += 1;
+      this.drawCards(t, 1);
+      this.addLog(`${p.nickname}【济世】令 ${t.nickname} 回复并摸牌`);
+      this.broadcastState();
+      return;
+    }
     throw new Error('该技能暂不可主动发动或参数错误');
   }
 
-  private dealDamage(target: Player, source: Player | null, amount: number, _reason: string) {
+  private dealDamage(target: Player, source: Player | null, amount: number, reason: string) {
     if (!target.isAlive) return;
+    if (this.hasHook(target, 'damageCap1') && amount > 1) {
+      amount = 1;
+      this.addLog(`${target.nickname}【凝霜】将伤害降至1点`);
+    }
     target.hp -= amount;
     this.addLog(`${target.nickname} 受到 ${amount} 点伤害${source ? `（来自 ${source.nickname}）` : ''}，体力 ${target.hp}`);
 
@@ -739,6 +790,10 @@ export class GameRoom {
       }
     }
     if (source && this.hasHook(source, 'drawAllyOnDamage')) this.drawCards(source, 1);
+    if (source && this.hasHook(source, 'drawOnSlashHit') && reason === 'slash') {
+      this.drawCards(source, 1);
+      this.addLog(`${source.nickname}【电陌】摸一张牌`);
+    }
     if (source && this.hasHook(source, 'healOnNearDamage') && this.distance(source, target) <= 1) {
       if (source.hp < source.maxHp) {
         source.hp += 1;
